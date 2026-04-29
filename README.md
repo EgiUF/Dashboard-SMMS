@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sanggaluri Social Media Management System (SMMS) Dashboard
 
-## Getting Started
+Sanggaluri SMMS adalah platform internal yang dirancang khusus untuk tim manajemen Sanggaluri dalam mengelola, merencanakan, dan mengevaluasi konten di berbagai platform media sosial (TikTok & Instagram).
 
-First, run the development server:
+## 🚀 Fitur Utama
 
+- **Unified Dashboard**: Pantau performa statistik (Reach, Likes, ER) secara *real-time* untuk setiap workspace.
+- **Content Plan (Kanban)**: Kelola alur kerja konten dari tahap *Awareness*, *Consideration*, hingga *Conversion*.
+- **Interactive Calendar**: Visualisasi jadwal posting konten bulanan untuk memastikan konsistensi unggahan.
+- **Evaluation Analytics**: Tabel evaluasi mendalam untuk menganalisis konten mana yang paling berkinerja baik.
+- **Multi-Workspace**: Kemampuan untuk berpindah antara akun media sosial yang berbeda dalam satu dashboard.
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 15 (App Router)](https://nextjs.org/)
+- **Bahasa**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Backend/Database**: [Supabase](https://supabase.com/)
+- **State Persistence**: LocalStorage (Active Workspace Tracking)
+
+---
+
+## 💻 Panduan Instalasi Lokal
+
+Ikuti langkah-langkah berikut untuk menjalankan project ini di komputer Anda:
+
+### 1. Prasyarat
+Pastikan Anda sudah menginstal:
+- [Node.js](https://nodejs.org/) (Versi 18 atau lebih baru)
+- [npm](https://www.npmjs.com/) atau [Yarn](https://yarnpkg.com/)
+
+### 2. Clone Repositori
+Buka terminal dan jalankan perintah berikut:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/EgiUF/Dashboard-SMMS.git
+cd Dashboard-SMMS
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Instal Dependensi
+Instal semua library yang dibutuhkan:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Konfigurasi Environment Variables
+Buat file baru bernama `.env.local` di direktori root project dan tambahkan kredensial Supabase Anda:
+```env
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 5. Jalankan Development Server
+Setelah semua selesai, jalankan aplikasi:
+```bash
+npm run dev
+```
+Buka [http://localhost:3000](http://localhost:3000) di browser Anda.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📂 Struktur Folder
+- `app/`: Routing utama dan halaman aplikasi.
+- `app/(dashboard)/`: Grup rute untuk area dashboard (membutuhkan autentikasi).
+- `components/`: Komponen UI yang dapat digunakan kembali.
+- `lib/services/`: Logika integrasi API dan Database (Supabase).
+- `public/`: Asset statis seperti gambar dan logo.
+- `SMMS UI/`: Folder referensi desain UI (PNG).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📄 Lisensi
+Project ini dibuat untuk keperluan internal manajemen Sanggaluri.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Dikembangkan oleh EgiUF*
