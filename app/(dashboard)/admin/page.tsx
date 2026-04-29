@@ -35,7 +35,12 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const workspaces = await getUserWorkspaces(user.id);
-        const activeWs = workspaces?.[0]; // Default to first workspace
+        
+        const storedId = localStorage.getItem("active_workspace_id");
+        const activeWs = storedId 
+          ? workspaces?.find((ws: any) => ws.id_workspace.toString() === storedId) || workspaces?.[0]
+          : workspaces?.[0];
+          
         setWorkspace(activeWs);
 
         if (activeWs) {

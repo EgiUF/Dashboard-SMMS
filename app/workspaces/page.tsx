@@ -28,7 +28,11 @@ export default function WorkspacesPage() {
       if (user) {
         const data = await getUserWorkspaces(user.id);
         setWorkspaces(data || []);
-        if (data && data.length > 0) {
+        
+        const storedId = localStorage.getItem("active_workspace_id");
+        if (storedId && data && data.find(ws => ws.id_workspace.toString() === storedId)) {
+          setSelectedWsId(Number(storedId));
+        } else if (data && data.length > 0) {
           setSelectedWsId(data[0].id_workspace);
         }
       } else {
@@ -62,6 +66,7 @@ export default function WorkspacesPage() {
 
   const handleEnterDashboard = () => {
     if (selectedWsId) {
+      localStorage.setItem("active_workspace_id", selectedWsId.toString());
       router.push("/admin");
     }
   };

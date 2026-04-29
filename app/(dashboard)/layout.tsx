@@ -50,7 +50,14 @@ export default function DashboardLayout({
     if (user) {
       const workspaces = await getUserWorkspaces(user.id);
       if (workspaces && workspaces.length > 0) {
-        setActiveWorkspace(workspaces[0]);
+        const storedId = localStorage.getItem("active_workspace_id");
+        const active = storedId 
+          ? workspaces.find((ws: any) => ws.id_workspace.toString() === storedId) || workspaces[0]
+          : workspaces[0];
+        setActiveWorkspace(active);
+        
+        // Also ensure the stored ID matches the one we're using
+        localStorage.setItem("active_workspace_id", active.id_workspace.toString());
       }
     } else {
       router.push("/login");
