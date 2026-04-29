@@ -22,8 +22,7 @@ export async function registerAdmin(email: string, password: string, namaLengkap
       .insert([
         {
           id: userId,
-          nama_lengkap: namaLengkap,
-          email: email,
+          nama: namaLengkap,
           role: role,
         }
       ]);
@@ -41,7 +40,7 @@ export async function registerAdmin(email: string, password: string, namaLengkap
       .insert([
         {
           nama_workspace: `Workspace - ${namaLengkap}`,
-          id_admin: userId
+          user_id: userId
         }
       ])
       .select('id_workspace')
