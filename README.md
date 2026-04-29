@@ -71,4 +71,3 @@ Buka [http://localhost:3000](http://localhost:3000) di browser Anda.
 Project ini dibuat untuk keperluan internal manajemen Sanggaluri.
 
 ---
-*Dikembangkan oleh EgiUF*
