@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getUserWorkspaces } from "@/lib/services/workspace";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -120,7 +121,7 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center">
             <p className="text-[#556964] text-xs">
-              Lupa password? Silakan hubungi tim IT Sanggaluri.
+              Lupa password? <Link href="/forgot-password" className="text-[#10b981] hover:underline">Reset di sini</Link>
             </p>
           </div>
         </div>
