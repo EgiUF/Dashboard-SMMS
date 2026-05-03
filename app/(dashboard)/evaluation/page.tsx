@@ -8,10 +8,11 @@ import { SuccessDialog } from "@/components/ui/SuccessDialog";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 const initialStats = [
-  { label: "Best Content", value: "7" },
-  { label: "Total Diunggah", value: "7" },
-  { label: "Berhasil Upload", value: "6", valueColor: "text-[#10b981]" },
-  { label: "Gagal Upload", value: "1", valueColor: "text-[#ef4444]" },
+  { label: "Best Content of Month", value: "7" },
+  { label: "Uploaded", value: "7", valueColor: "text-[#10b981]" },
+  { label: "Unuploaded", value: "6", valueColor: "text-[#ef4444]" },
+  { label: "Pending", value: "1", valueColor: "text-[#f59e0b]" },
+  { label: "Cancelled", value: "0", valueColor: "text-[#64748b]" },
 ];
 
 const initialData = [
@@ -24,7 +25,7 @@ const initialData = [
   { id: 7, name: "Opening Hour Update", upload: "5 Apr 2026", eval: "11 Apr 2026", views: "0", likes: "0", comments: "0", shares: "0", favs: "0", er: "0.00%", erType: "none" },
 ];
 
-const statusUploadOptions = ["Uploaded", "Unuploaded", "Pending", "Cancel"];
+const statusUploadOptions = ["Uploaded", "Unuploaded", "Pending", "Cancelled"];
 
 export default function EvaluationPage() {
   const [activeFilter, setActiveFilter] = useState(1);
@@ -99,7 +100,7 @@ export default function EvaluationPage() {
       </div>
 
       {/* Top Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {initialStats.map((stat, idx) => (
           <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{stat.label}</h3>
@@ -113,19 +114,42 @@ export default function EvaluationPage() {
         <div className="px-4 py-2 bg-white rounded-xl border border-gray-100 shadow-sm text-xs font-bold text-gray-500">
           Min, 19 Apr 2026
         </div>
-        <button className="flex items-center gap-2 px-6 py-2.5 bg-[#122C28] text-white text-xs font-bold rounded-xl hover:bg-[#1B3C37] transition-all">
-          <Download className="w-4 h-4" />
-          <span>Export</span>
-        </button>
+        <div className="relative group">
+          <button className="flex items-center gap-2 px-6 py-2.5 bg-[#122C28] text-white text-xs font-bold rounded-xl hover:bg-[#1B3C37] transition-all">
+            <Download className="w-4 h-4" />
+            <span>Export Laporan</span>
+          </button>
+          <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+            <div className="py-2">
+              <button className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors">Export as Excel (.xlsx)</button>
+              <button className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors">Export as CSV (.csv)</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Main Table Section */}
       <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <h3 className="text-xl font-bold text-[#1e293b]">Tabel Evaluasi Konten</h3>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <select className="px-4 py-2 text-xs font-bold bg-white border border-gray-200 rounded-xl outline-none focus:border-[#10b981]">
+              <option value="all">Semua Bulan</option>
+              <option value="jan">Januari</option>
+              <option value="feb">Februari</option>
+              <option value="mar">Maret</option>
+              <option value="apr">April</option>
+              <option value="may">Mei</option>
+              <option value="jun">Juni</option>
+              <option value="jul">Juli</option>
+              <option value="aug">Agustus</option>
+              <option value="sep">September</option>
+              <option value="oct">Oktober</option>
+              <option value="nov">November</option>
+              <option value="dec">Desember</option>
+            </select>
             <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100">
-              {["Semua", "Bulan Ini", "Last Week"].map((f, i) => (
+              {["All", "Last Week"].map((f, i) => (
                 <button key={i} onClick={() => setActiveFilter(i)} className={clsx(
                   "px-4 py-1.5 text-xs font-bold rounded-lg transition-all",
                   activeFilter === i ? "bg-white text-[#1e293b] shadow-sm" : "text-gray-400 hover:text-gray-600"
@@ -134,6 +158,12 @@ export default function EvaluationPage() {
                 </button>
               ))}
             </div>
+            <select className="px-4 py-2 text-xs font-bold bg-white border border-gray-200 rounded-xl outline-none focus:border-[#10b981]">
+              <option value="10">10 Data</option>
+              <option value="25">25 Data</option>
+              <option value="50">50 Data</option>
+              <option value="100">100 Data</option>
+            </select>
             <button 
               onClick={() => {
                 setAddForm({ name: "", uploadDate: "", evalDate: "", views: "", likes: "", comments: "", shares: "", favs: "", statusUpload: "Uploaded" });

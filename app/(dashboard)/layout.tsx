@@ -98,8 +98,8 @@ export default function DashboardLayout({
             <span className="text-[#10b981] font-bold text-xl">S</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-lg leading-tight tracking-tight">SanggaluriSM</span>
-            <span className="text-[10px] text-white/50 tracking-widest uppercase">Social Media Hub</span>
+            <span className="font-bold text-lg leading-tight tracking-tight">SanggaluriMS</span>
+            <span className="text-[10px] text-white/50 tracking-widest uppercase">Social Media Management</span>
           </div>
         </div>
 
@@ -172,7 +172,7 @@ export default function DashboardLayout({
           >
             <Menu className="w-6 h-6" />
           </button>
-          <span className="ml-2 font-bold text-gray-900">SanggaluriSM</span>
+          <span className="ml-2 font-bold text-gray-900">SanggaluriMS</span>
         </header>
 
         {/* Page Content */}
@@ -187,7 +187,7 @@ export default function DashboardLayout({
         onClose={() => setShowLogoutConfirm(false)}
         onConfirm={handleLogout}
         title="Yakin Ingin Keluar?"
-        description="Apakah kamu yakin ingin keluar dari SanggaluriSM?"
+        description="Apakah kamu yakin ingin keluar dari SanggaluriMS?"
         subDescription="Sesi kamu akan diakhiri dan kamu harus login kembali untuk masuk ke dashboard"
         cancelText="Batal"
         confirmText="Ya, Keluar"

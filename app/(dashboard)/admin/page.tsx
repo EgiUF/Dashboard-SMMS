@@ -95,13 +95,13 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      title: "Upload Bulan Ini",
-      value: konten.length.toString(),
+      title: "Total Content Uploaded This Month",
+      value: konten.filter(k => k.status_konten === 'Uploaded').length.toString(),
       icon: <div className="p-2 bg-[#EEF2FF] rounded-lg text-[#6366F1]"><UploadCloud className="w-5 h-5" /></div>,
       trendText: "↑ 4 dari target",
     },
     {
-      title: "Pertumbuhan Views",
+      title: "Metrik Pertumbuhan Views Last Month",
       value: `+${growth?.growth_percentage || 0}%`,
       icon: <div className="p-2 bg-[#FFFBEB] rounded-lg text-[#F59E0B]"><FileText className="w-5 h-5" /></div>,
       trendText: "↑ vs bulan lalu",
@@ -133,24 +133,26 @@ export default function DashboardPage() {
   const recentContent = konten.slice(0, 5).map(k => {
     let badgeColor = "bg-[#ECFCCB] text-[#4D7C0F]";
     let badgeText = "UPLOADED";
-    if (k.status_konten === "Draft") { badgeColor = "bg-[#FEE2E2] text-[#B91C1C]"; badgeText = "UNUPLOADED"; }
-    if (k.status_konten === "Scheduled") { badgeColor = "bg-[#FFEDD5] text-[#C2410C]"; badgeText = "PENDING"; }
+    if (k.status_konten === "Unuploaded") { badgeColor = "bg-[#FEE2E2] text-[#B91C1C]"; badgeText = "UNUPLOADED"; }
+    if (k.status_konten === "Pending") { badgeColor = "bg-[#FFEDD5] text-[#C2410C]"; badgeText = "PENDING"; }
+    if (k.status_konten === "Cancelled") { badgeColor = "bg-[#F3F4F6] text-[#6B7280]"; badgeText = "CANCELLED"; }
     
     return {
       id: k.id_konten,
       title: k.nama_konten,
-      subtitle: `${k.pillar || 'Awareness'} • Video • 10:00 WIB`,
+      subtitle: `${k.pillar || 'Awareness'} • ${k.content_type || 'Video'} • 10:00 WIB`,
       badgeColor,
-      badgeText
+      badgeText,
+      link: k.content_link
     }
   });
 
   // Fallback if no content
   if (recentContent.length === 0) {
     recentContent.push(
-      { id: 1, title: "Fakta Unik Burung Nuri", subtitle: "Awareness • Carousel • 10:00 WIB", badgeColor: "bg-[#ECFCCB] text-[#4D7C0F]", badgeText: "UPLOADED" },
-      { id: 2, title: "Promo Tiket Rombongan", subtitle: "Conversion • Reel • 15:00 WIB", badgeColor: "bg-[#FFEDD5] text-[#C2410C]", badgeText: "PENDING" },
-      { id: 3, title: "Behind the Scenes Wahana", subtitle: "Consideration • Story • 18:00 WIB", badgeColor: "bg-[#FEE2E2] text-[#B91C1C]", badgeText: "UNUPLOADED" }
+      { id: 1, title: "Fakta Unik Burung Nuri", subtitle: "Awareness • Carousel • 10:00 WIB", badgeColor: "bg-[#ECFCCB] text-[#4D7C0F]", badgeText: "UPLOADED", link: "https://instagram.com" },
+      { id: 2, title: "Promo Tiket Rombongan", subtitle: "Conversion • Reel • 15:00 WIB", badgeColor: "bg-[#FFEDD5] text-[#C2410C]", badgeText: "PENDING", link: null },
+      { id: 3, title: "Behind the Scenes Wahana", subtitle: "Consideration • Story • 18:00 WIB", badgeColor: "bg-[#FEE2E2] text-[#B91C1C]", badgeText: "UNUPLOADED", link: null }
     );
   }
 
@@ -196,11 +198,19 @@ export default function DashboardPage() {
           <div className="space-y-3">
             {recentContent.map(item => (
               <div key={item.id} className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors">
-                <div>
-                  <h4 className="font-bold text-sm text-[#1e293b]">{item.title}</h4>
+                <div className="flex-1">
+                  <h4 className="font-bold text-sm text-[#1e293b]">
+                    {item.link ? (
+                      <a href={item.link} target="_blank" rel="noopener noreferrer" className="hover:text-[#10b981] flex items-center gap-1">
+                        {item.title} <ArrowUpRight className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      item.title
+                    )}
+                  </h4>
                   <p className="text-xs text-gray-400 mt-1">{item.subtitle}</p>
                 </div>
-                <div className={clsx("text-[10px] font-bold px-3 py-1 rounded-md tracking-wider", item.badgeColor)}>
+                <div className={clsx("text-[10px] font-bold px-3 py-1 rounded-md tracking-wider ml-4", item.badgeColor)}>
                   {item.badgeText}
                 </div>
               </div>
@@ -222,7 +232,7 @@ export default function DashboardPage() {
               {mainTopKonten ? mainTopKonten.nama_konten : "Vlog Keseruan Anak SD"}
             </h3>
             
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-6 gap-2">
               <div>
                 <p className="text-[10px] text-white/50 mb-1">Views</p>
                 <p className="text-sm font-bold">{mainTopKonten ? (mainTopKonten.metric_value/1000).toFixed(1) + 'K' : '15.2K'}</p>
@@ -232,8 +242,16 @@ export default function DashboardPage() {
                 <p className="text-sm font-bold">1.4K</p>
               </div>
               <div>
+                <p className="text-[10px] text-white/50 mb-1">Comment</p>
+                <p className="text-sm font-bold">230</p>
+              </div>
+              <div>
                 <p className="text-[10px] text-white/50 mb-1">Share</p>
                 <p className="text-sm font-bold">312</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-white/50 mb-1">Favorite</p>
+                <p className="text-sm font-bold">180</p>
               </div>
               <div>
                 <p className="text-[10px] text-white/50 mb-1">ER</p>

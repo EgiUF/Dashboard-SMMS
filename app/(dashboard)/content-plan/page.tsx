@@ -37,8 +37,8 @@ const initialColumns = [
 ];
 
 const pillarOptions = ["Awareness", "Consideration", "Conversion"];
-const formatOptions = ["Reel", "Story", "Carousel", "Photo"];
-const statusOptions = ["Uploaded", "Unuploaded", "Pending", "Cancel"];
+const formatOptions = ["Reels", "Feed", "Story", "TikTok Video", "Carousel", "Short Video"];
+const statusOptions = ["Uploaded", "Unuploaded", "Pending", "Cancelled"];
 
 interface ContentItem {
   id: number;
@@ -49,6 +49,7 @@ interface ContentItem {
   format: string;
   pillar: string;
   description: string;
+  link?: string;
 }
 
 export default function ContentPlanPage() {
@@ -61,12 +62,12 @@ export default function ContentPlanPage() {
 
   // Edit form state
   const [editForm, setEditForm] = useState({
-    title: "", pillar: "", format: "", date: "", time: "", status: "", description: ""
+    title: "", pillar: "", format: "", date: "", time: "", status: "", description: "", link: ""
   });
 
   // Add form state
   const [addForm, setAddForm] = useState({
-    title: "", pillar: "Awareness", format: "Reel", date: "", time: "", status: "Pending", description: ""
+    title: "", pillar: "Awareness", format: "Reels", date: "", time: "", status: "Pending", description: "", link: ""
   });
 
   const handleCardClick = (item: ContentItem) => {
@@ -79,13 +80,14 @@ export default function ContentPlanPage() {
       time: item.time,
       status: item.status,
       description: item.description,
+      link: item.link || "",
     });
     setIsEditOpen(true);
   };
 
   const handleSaveEdit = () => {
     setIsEditOpen(false);
-    setSuccessMsg("Data konten kamu telah berhasil diperbarui ke dalam sistem SanggaluriSM");
+    setSuccessMsg("Data konten kamu telah berhasil diperbarui ke dalam sistem SanggaluriMS");
   };
 
   const handleDeleteContent = () => {
@@ -95,13 +97,13 @@ export default function ContentPlanPage() {
 
   const handleAddClick = (pillar: string) => {
     setAddPillar(pillar);
-    setAddForm({ ...addForm, pillar, title: "", format: "Reel", date: "", time: "", status: "Pending", description: "" });
+    setAddForm({ ...addForm, pillar, title: "", format: "Reels", date: "", time: "", status: "Pending", description: "", link: "" });
     setIsAddOpen(true);
   };
 
   const handleSaveAdd = () => {
     setIsAddOpen(false);
-    setSuccessMsg("Data konten kamu telah berhasil ditambahkan ke dalam sistem SanggaluriSM");
+    setSuccessMsg("Data konten kamu telah berhasil ditambahkan ke dalam sistem SanggaluriMS");
   };
 
   return (
@@ -137,6 +139,7 @@ export default function ContentPlanPage() {
                       item.status === "Uploaded" && "bg-[#ccfbf1] text-[#0f766e]",
                       item.status === "Pending" && "bg-[#fef3c7] text-[#92400e]",
                       item.status === "Unuploaded" && "bg-[#fee2e2] text-[#991b1b]",
+                      item.status === "Cancelled" && "bg-gray-100 text-gray-500",
                     )}>
                       {item.status}
                     </span>
@@ -171,6 +174,18 @@ export default function ContentPlanPage() {
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-[#1e293b] outline-none focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/30 transition-all"
                 value={editForm.title}
                 onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+              />
+            </div>
+
+            {/* Link Konten */}
+            <div>
+              <label className="text-xs font-bold text-[#64748b] mb-1.5 block">Link Konten</label>
+              <input
+                type="url"
+                placeholder="https://..."
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-[#1e293b] outline-none focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/30 transition-all placeholder:text-gray-300"
+                value={editForm.link}
+                onChange={(e) => setEditForm({...editForm, link: e.target.value})}
               />
             </div>
 
@@ -282,6 +297,17 @@ export default function ContentPlanPage() {
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-[#1e293b] outline-none focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/30 transition-all placeholder:text-gray-300"
                 value={addForm.title}
                 onChange={(e) => setAddForm({...addForm, title: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-[#64748b] mb-1.5 block">Link Konten</label>
+              <input
+                type="url"
+                placeholder="https://..."
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-[#1e293b] outline-none focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/30 transition-all placeholder:text-gray-300"
+                value={addForm.link}
+                onChange={(e) => setAddForm({...addForm, link: e.target.value})}
               />
             </div>
 
