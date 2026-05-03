@@ -28,7 +28,7 @@ Fokus: **Fondasi Data & Keamanan**.
 | **Workspace**   | ✅ Ready   | Fetch list workspace, Switch workspace logic.  | -                                          |
 | **Konten CRUD** | ⚠️ Partial | Create, Read, Update, Delete logic (API).      | Hubungkan ke field modal baru di FE.       |
 | **Storage**     | ✅ Ready   | Upload asset (Foto/Video) ke Supabase Storage. | Implementasi di modal FE.                  |
-| **Evaluasi**    | ❌ Pending | -                                              | Buat skema tabel & CRUD data evaluasi.     |
+| **Evaluasi**    | ⚠️ Partial | Tabel `evaluasi` sudah ada di database.        | Hubungkan CRUD data evaluasi ke UI.        |
 | **Analytics**   | ❌ Pending | -                                              | Logic perhitungan agregat untuk dashboard. |
 
 ---
@@ -39,7 +39,6 @@ Pekerjaan selanjutnya akan difokuskan pada sinkronisasi UI dengan Data asli:
 
 1.  **Database Integration**:
     - Menghubungkan Modal _Content Plan_ dan _Evaluasi_ ke database (mengganti mock data).
-    - Membuat tabel `evaluasi` di Supabase untuk menyimpan metrik performa.
 2.  **Dashboard Analytics**:
     - Mengganti angka statis di dashboard dengan hasil query real-time (Pertumbuhan %, Total Likes, dll).
 3.  **Fitur Lanjutan**:
