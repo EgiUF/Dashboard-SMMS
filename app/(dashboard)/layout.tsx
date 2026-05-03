@@ -18,6 +18,7 @@ import { twMerge } from "tailwind-merge";
 import { createClient } from "@/lib/supabase/client";
 import { logoutAdmin } from "@/lib/services/auth";
 import { getUserWorkspaces } from "@/lib/services/workspace";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -37,6 +38,7 @@ export default function DashboardLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeWorkspace, setActiveWorkspace] = useState<any>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -92,8 +94,7 @@ export default function DashboardLayout({
       )}>
         {/* Logo Section */}
         <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-black/20 rounded-lg flex items-center justify-center">
-            {/* Using text for logo as placeholder */}
+          <div className="w-10 h-10 bg-black/20 rounded-lg flex items-center justify-center overflow-hidden">
             <span className="text-[#10b981] font-bold text-xl">S</span>
           </div>
           <div className="flex flex-col">
@@ -152,7 +153,7 @@ export default function DashboardLayout({
         {/* Bottom Actions */}
         <div className="p-6 border-t border-[#1B3C37]">
           <button 
-            onClick={handleLogout}
+            onClick={() => setShowLogoutConfirm(true)}
             className="flex items-center justify-center gap-3 w-full px-4 py-3 border border-white/20 text-white hover:bg-white/5 rounded-xl transition-all duration-200"
           >
             <LogOut className="w-5 h-5" />
@@ -179,6 +180,18 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Yakin Ingin Keluar?"
+        description="Apakah kamu yakin ingin keluar dari SanggaluriSM?"
+        subDescription="Sesi kamu akan diakhiri dan kamu harus login kembali untuk masuk ke dashboard"
+        cancelText="Batal"
+        confirmText="Ya, Keluar"
+      />
     </div>
   );
 }

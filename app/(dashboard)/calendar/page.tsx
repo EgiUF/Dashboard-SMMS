@@ -1,22 +1,120 @@
 "use client";
 
-import React, { useState } from "react";
-import { ChevronLeft, ChevronRight, CheckCircle2, Clock, AlertCircle, XCircle } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { clsx } from "clsx";
 
-export default function CalendarPage() {
-  const [selectedDate, setSelectedDate] = useState(23);
-  
-  const days = Array.from({ length: 30 }, (_, i) => i + 1);
-  const startOffset = 2; // Starts on Wednesday for example
-  const blankDays = Array.from({ length: startOffset }, (_, i) => null);
-  const allDays = [...blankDays, ...days];
+// Mock calendar content data
+const mockEvents: Record<string, { time: string; title: string; type: string; status: string }[]> = {
+  "2026-04-05": [
+    { time: "07:00", title: "Opening Hour Update", type: "Awareness · Story · Update jam operasional.", status: "Uploaded" },
+  ],
+  "2026-04-18": [
+    { time: "10:00", title: "Mengenal Satwa Lokal", type: "Awareness · Carousel · Draft konten.", status: "Pending" },
+  ],
+  "2026-04-19": [
+    { time: "10:00", title: "Fakta Unik Burung Nuri", type: "Awareness · Carousel · Konten edukasi tentang burung nuri.", status: "Uploaded" },
+    { time: "15:00", title: "Promo Tiket Rombongan", type: "Conversion · Reel · Promo diskon tiket rombongan.", status: "Pending" },
+    { time: "18:00", title: "Behind the Scenes Wahana", type: "Consideration · Story · BTS wahana baru.", status: "Unuploaded" },
+  ],
+  "2026-04-20": [
+    { time: "10:00", title: "Sejarah Sanggaluri", type: "Awareness · Reel · Sejarah berdiri.", status: "Pending" },
+    { time: "14:00", title: "Flash Sale Weekend", type: "Conversion · Story · Flash sale.", status: "Unuploaded" },
+  ],
+  "2026-04-22": [
+    { time: "09:00", title: "Tips Foto di Sanggaluri", type: "Consideration · Carousel · Spot foto terbaik.", status: "Uploaded" },
+    { time: "16:00", title: "Review Pengunjung", type: "Consideration · Reel · Kompilasi review.", status: "Pending" },
+    { time: "11:00", title: "Vlog Keseruan Anak SD", type: "Awareness · Reel · Dokumentasi kunjungan.", status: "Unuploaded" },
+  ],
+  "2026-04-23": [
+    { time: "10:00", title: "Fakta Unik Burung Nuri", type: "Awareness · Carousel · Konten edukasi tentang burung nuri.", status: "Uploaded" },
+    { time: "10:00", title: "Fakta Unik Burung Nuri", type: "Awareness · Carousel · Konten edukasi tentang burung nuri.", status: "Pending" },
+    { time: "10:00", title: "Fakta Unik Burung Nuri", type: "Awareness · Carousel · Konten edukasi tentang burung nuri.", status: "Unuploaded" },
+  ],
+  "2026-04-24": [
+    { time: "10:00", title: "FAQ Wahana Edukatif", type: "Consideration · Carousel · FAQ wahana.", status: "Pending" },
+  ],
+};
 
-  const events = [
-    { time: "10:00", title: "Fakta Unik Burung Nuri", type: "Awareness • Carousel • Konten edukasi tentang burung nuri.", status: "Uploaded" },
-    { time: "10:00", title: "Fakta Unik Burung Nuri", type: "Awareness • Carousel • Konten edukasi tentang burung nuri.", status: "Pending" },
-    { time: "10:00", title: "Fakta Unik Burung Nuri", type: "Awareness • Carousel • Konten edukasi tentang burung nuri.", status: "Unuploaded" },
-  ];
+const DAY_NAMES = ["SEN", "SEL", "RAB", "KAM", "JUM", "SAB", "MIN"];
+const MONTH_NAMES = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+const DAY_NAMES_FULL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+
+function getDaysInMonth(year: number, month: number) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getFirstDayOfMonth(year: number, month: number) {
+  const day = new Date(year, month, 1).getDay();
+  // Convert Sunday=0 to Monday-start: Mon=0, Tue=1, ..., Sun=6
+  return day === 0 ? 6 : day - 1;
+}
+
+function formatDateKey(year: number, month: number, day: number) {
+  return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+export default function CalendarPage() {
+  const [currentYear, setCurrentYear] = useState(2026);
+  const [currentMonth, setCurrentMonth] = useState(3); // April = 3 (0-indexed)
+  const [selectedDay, setSelectedDay] = useState<number | null>(23);
+
+  const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+  const firstDayOffset = getFirstDayOfMonth(currentYear, currentMonth);
+
+  const prevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+    setSelectedDay(null);
+  };
+
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+    setSelectedDay(null);
+  };
+
+  const goToToday = () => {
+    setCurrentYear(2026);
+    setCurrentMonth(3);
+    setSelectedDay(23);
+  };
+
+  // Get status dots for a day
+  const getStatusDots = (day: number) => {
+    const key = formatDateKey(currentYear, currentMonth, day);
+    const events = mockEvents[key];
+    if (!events) return [];
+    const statuses = new Set(events.map(e => e.status));
+    const dots: string[] = [];
+    if (statuses.has("Pending")) dots.push("#f59e0b");
+    if (statuses.has("Unuploaded")) dots.push("#ef4444");
+    if (statuses.has("Uploaded")) dots.push("#10b981");
+    return dots;
+  };
+
+  // Selected day events
+  const selectedDateKey = selectedDay ? formatDateKey(currentYear, currentMonth, selectedDay) : null;
+  const selectedEvents = selectedDateKey ? (mockEvents[selectedDateKey] || []) : [];
+
+  // Full day name for selected day
+  const selectedDayName = selectedDay ? DAY_NAMES_FULL[new Date(currentYear, currentMonth, selectedDay).getDay()] : "";
+
+  // Build calendar grid
+  const calendarCells = useMemo(() => {
+    const cells: (number | null)[] = [];
+    for (let i = 0; i < firstDayOffset; i++) cells.push(null);
+    for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+    return cells;
+  }, [firstDayOffset, daysInMonth]);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
@@ -34,15 +132,15 @@ export default function CalendarPage() {
       {/* Calendar Card */}
       <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-8">
-          <h3 className="text-xl font-bold text-[#1e293b]">April 2026</h3>
+          <h3 className="text-xl font-bold text-[#1e293b]">{MONTH_NAMES[currentMonth]} {currentYear}</h3>
           <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-gray-50 rounded-lg border border-gray-100 text-gray-400">
+            <button onClick={prevMonth} className="p-2 hover:bg-gray-50 rounded-lg border border-gray-100 text-gray-400 transition-colors">
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <button className="px-4 py-2 bg-white border border-gray-100 rounded-lg text-xs font-bold text-[#1e293b] hover:bg-gray-50">
+            <button onClick={goToToday} className="px-4 py-2 bg-white border border-gray-100 rounded-lg text-xs font-bold text-[#1e293b] hover:bg-gray-50 transition-colors">
               Hari Ini
             </button>
-            <button className="p-2 hover:bg-gray-50 rounded-lg border border-gray-100 text-gray-400">
+            <button onClick={nextMonth} className="p-2 hover:bg-gray-50 rounded-lg border border-gray-100 text-gray-400 transition-colors">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -50,53 +148,42 @@ export default function CalendarPage() {
 
         {/* Days Header */}
         <div className="grid grid-cols-7 gap-4 mb-4">
-          {["SEN", "SEL", "RAB", "KAM", "JUM", "SAB", "MIN"].map(day => (
+          {DAY_NAMES.map(day => (
             <div key={day} className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">{day}</div>
           ))}
         </div>
 
         {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-4">
-          {allDays.map((day, idx) => {
+          {calendarCells.map((day, idx) => {
             if (day === null) return <div key={`blank-${idx}`} className="h-24" />;
             
-            const isSelected = selectedDate === day;
-            const hasDots = day === 18 || day === 20 || day === 22 || day === 23;
+            const isSelected = selectedDay === day;
+            const dots = getStatusDots(day);
             
             return (
               <button 
                 key={day}
-                onClick={() => setSelectedDate(day)}
+                onClick={() => setSelectedDay(day)}
                 className={clsx(
-                  "h-24 p-3 rounded-xl border text-left transition-all flex flex-col justify-between group",
-                  isSelected ? "bg-[#ccfbf1]/20 border-[#10b981] ring-1 ring-[#10b981]" : "bg-white border-gray-100 hover:border-[#10b981]/30"
+                  "h-24 p-3 rounded-xl border text-left transition-all duration-200 flex flex-col justify-between group",
+                  isSelected 
+                    ? "bg-[#ccfbf1]/30 border-[#10b981] ring-1 ring-[#10b981]" 
+                    : "bg-white border-gray-100 hover:border-[#10b981]/30 hover:shadow-sm"
                 )}
               >
-                <span className={clsx("text-sm font-bold", isSelected ? "text-[#10b981]" : "text-gray-600")}>{day}</span>
+                <span className={clsx(
+                  "text-sm font-bold",
+                  isSelected ? "text-[#10b981]" : "text-gray-600"
+                )}>
+                  {day}
+                </span>
                 
-                {hasDots && (
+                {dots.length > 0 && (
                   <div className="flex gap-1">
-                    {day === 18 && <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />}
-                    {day === 20 && (
-                      <>
-                        <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
-                        <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
-                      </>
-                    )}
-                    {day === 22 && (
-                      <>
-                        <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
-                        <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
-                        <div className="w-2 h-2 rounded-full bg-[#10b981]" />
-                      </>
-                    )}
-                    {day === 23 && (
-                      <>
-                        <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
-                        <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
-                        <div className="w-2 h-2 rounded-full bg-[#10b981]" />
-                      </>
-                    )}
+                    {dots.map((color, i) => (
+                      <div key={i} className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                    ))}
                   </div>
                 )}
               </button>
@@ -127,32 +214,46 @@ export default function CalendarPage() {
 
       {/* Day Details */}
       <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
-        <div className="mb-6">
-          <h3 className="text-xl font-bold text-[#1e293b]">Kamis, 23 April 2026</h3>
-          <p className="text-xs text-gray-400 mt-1">4 konten dijadwalkan</p>
-        </div>
-
-        <div className="space-y-4">
-          {events.map((event, idx) => (
-            <div key={idx} className="flex items-center justify-between p-6 rounded-2xl border border-gray-50 hover:bg-gray-50/30 transition-all">
-              <div className="flex items-center gap-6">
-                <span className="text-sm font-bold text-[#1e293b]">{event.time}</span>
-                <div>
-                  <h4 className="font-bold text-[#1e293b]">{event.title}</h4>
-                  <p className="text-[10px] text-gray-400 mt-1">{event.type}</p>
-                </div>
-              </div>
-              <div className={clsx(
-                "px-6 py-2 rounded-xl text-xs font-bold border",
-                event.status === "Uploaded" && "bg-[#ccfbf1] text-[#0f766e] border-[#0f766e]/10",
-                event.status === "Pending" && "bg-[#fef3c7] text-[#92400e] border-[#92400e]/10",
-                event.status === "Unuploaded" && "bg-[#fee2e2] text-[#991b1b] border-[#991b1b]/10",
-              )}>
-                {event.status}
-              </div>
+        {selectedDay && selectedEvents.length > 0 ? (
+          <>
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-[#1e293b]">{selectedDayName}, {selectedDay} {MONTH_NAMES[currentMonth]} {currentYear}</h3>
+              <p className="text-xs text-gray-400 mt-1">{selectedEvents.length} konten dijadwalkan</p>
             </div>
-          ))}
-        </div>
+
+            <div className="space-y-4">
+              {selectedEvents.map((event, idx) => (
+                <div key={idx} className="flex items-center justify-between p-6 rounded-2xl border border-gray-50 hover:bg-gray-50/30 transition-all">
+                  <div className="flex items-center gap-6">
+                    <span className="text-sm font-bold text-[#1e293b] w-12 shrink-0">{event.time}</span>
+                    <div>
+                      <h4 className="font-bold text-[#1e293b]">{event.title}</h4>
+                      <p className="text-[10px] text-gray-400 mt-1">{event.type}</p>
+                    </div>
+                  </div>
+                  <div className={clsx(
+                    "px-6 py-2 rounded-xl text-xs font-bold border shrink-0",
+                    event.status === "Uploaded" && "bg-[#ccfbf1] text-[#0f766e] border-[#0f766e]/10",
+                    event.status === "Pending" && "bg-[#fef3c7] text-[#92400e] border-[#92400e]/10",
+                    event.status === "Unuploaded" && "bg-[#fee2e2] text-[#991b1b] border-[#991b1b]/10",
+                  )}>
+                    {event.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-sm text-gray-400 font-medium">
+              {selectedDay 
+                ? "Tidak ada konten dijadwalkan untuk tanggal ini." 
+                : "Pilih tanggal untuk melihat detail konten"
+              }
+            </p>
+            <p className="text-xs text-gray-300 mt-1">Klik pada tanggal di kalender untuk melihat daftar konten.</p>
+          </div>
+        )}
       </div>
     </div>
   );
