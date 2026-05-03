@@ -12,7 +12,6 @@ export async function getUserWorkspaces(userId: string) {
     console.error('Error fetching workspaces:', error);
     throw error;
   }
-
   return data;
 }
 
@@ -32,7 +31,6 @@ export async function createWorkspace(userId: string, name: string) {
     console.error('Error creating workspace:', error);
     throw error;
   }
-
   return data;
 }
 
